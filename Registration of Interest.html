@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registration of Interest — 2026 Innovation Programme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: oklch(0.97 0.01 220);
+      --surface: #ffffff;
+      --ink: oklch(0.18 0.02 220);
+      --ink-soft: oklch(0.42 0.015 220);
+      --ink-mute: oklch(0.60 0.012 220);
+      --line: oklch(0.87 0.012 220);
+      --line-soft: oklch(0.93 0.01 220);
+      --accent: oklch(0.67 0.19 44);
+      --accent-deep: oklch(0.55 0.19 42);
+      --accent-soft: oklch(0.93 0.05 44);
+      --accent-tint: oklch(0.96 0.03 44);
+      --purple: oklch(0.52 0.22 300);
+      --error: oklch(0.55 0.18 25);
+      --radius-sm: 8px; --radius: 14px; --radius-lg: 22px;
+      --shadow-sm: 0 1px 2px oklch(0.3 0.02 50 / 0.06);
+      --shadow: 0 8px 24px oklch(0.3 0.02 50 / 0.08), 0 2px 6px oklch(0.3 0.02 50 / 0.05);
+      --shadow-lg: 0 24px 60px oklch(0.3 0.02 50 / 0.12), 0 8px 18px oklch(0.3 0.02 50 / 0.06);
+      --font-display: "Instrument Serif","Times New Roman",Georgia,serif;
+      --font-body: "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0;min-height:100%}
+    body{font-family:var(--font-body);background:var(--bg)}
+
+    .layout-switcher{position:fixed;bottom:28px;right:28px;z-index:100;display:flex;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px;box-shadow:var(--shadow)}
+    .layout-btn{appearance:none;border:none;background:transparent;font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--ink-mute);padding:7px 14px;border-radius:999px;cursor:pointer;transition:all .2s ease;letter-spacing:.01em}
+    .layout-btn:hover{color:var(--ink);background:var(--accent-tint)}
+    .layout-btn.active{background:var(--ink);color:white}
+
+    .roi-root{font-family:var(--font-body);color:var(--ink);min-height:100vh;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+    .roi-bg--solid{background:var(--bg)}
+    .roi-bg--gradient{background:radial-gradient(ellipse 80% 60% at 80% 0%,oklch(0.92 0.04 220/.7),transparent 60%),radial-gradient(ellipse 60% 50% at 0% 100%,oklch(0.93 0.03 250/.5),transparent 60%),var(--bg)}
+    .roi-bg--pattern{background-color:var(--bg);background-image:radial-gradient(oklch(0.75 0.03 220/.18) 1px,transparent 1px),radial-gradient(oklch(0.75 0.03 220/.18) 1px,transparent 1px);background-size:28px 28px;background-position:0 0,14px 14px}
+    .roi-bg--mesh{background:radial-gradient(circle at 18% 22%,oklch(0.88 0.06 44/.4),transparent 42%),radial-gradient(circle at 82% 18%,oklch(0.90 0.05 220/.5),transparent 45%),radial-gradient(circle at 70% 88%,oklch(0.87 0.07 300/.35),transparent 50%),radial-gradient(circle at 12% 82%,oklch(0.91 0.04 240/.45),transparent 45%),var(--bg)}
+
+    .roi-display{font-family:var(--font-display);font-weight:400;letter-spacing:-.02em;line-height:1.02}
+    .roi-eyebrow{font-family:var(--font-body);font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+    .roi-eyebrow--accent{color:var(--accent-deep)}
+
+    .roi-topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 40px;border-bottom:1px solid var(--line-soft);position:sticky;top:0;z-index:50;background:oklch(0.97 0.01 220 / 0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .roi-brand{display:flex;align-items:center;gap:12px;font-weight:600;font-size:15px;letter-spacing:-.01em}
+    .roi-brand__logo-wrap{width:52px;height:48px;overflow:hidden;position:relative;flex-shrink:0}
+    .roi-brand__logo{position:absolute;height:120px;top:0;left:0;max-width:none}
+    .roi-brand__name{display:flex;flex-direction:column;gap:1px}
+    .roi-brand__name-main{font-weight:600;font-size:14px;letter-spacing:-.01em;color:var(--ink);line-height:1.2}
+    .roi-brand__name-sub{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);line-height:1}
+    .roi-brand__sub{color:var(--ink-mute);font-weight:400;font-size:13px;border-left:1px solid var(--line);padding-left:12px;margin-left:4px}
+    .roi-topnav{display:flex;align-items:center;gap:32px;font-size:14px;color:var(--ink-soft)}
+    .roi-topnav a{color:inherit;text-decoration:none}.roi-topnav a:hover{color:var(--ink)}
+
+    .roi-btn{appearance:none;border:1px solid transparent;font-family:inherit;font-size:15px;font-weight:500;letter-spacing:-.005em;padding:14px 22px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s ease,background .2s ease,border-color .2s ease,color .2s ease,box-shadow .2s ease;white-space:nowrap}
+    .roi-btn:active{transform:translateY(1px)}
+    .roi-btn--accent{background:var(--accent);color:white;box-shadow:0 6px 18px oklch(0.67 0.19 44/.35)}
+    .roi-btn--accent:hover{background:var(--accent-deep)}
+    .roi-btn--ghost{background:transparent;color:var(--ink-soft);border-color:var(--line)}
+    .roi-btn--ghost:hover{color:var(--ink);border-color:var(--ink-mute)}
+    .roi-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .roi-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite}
+
+    .roi-submit-error{background:oklch(0.99 0.015 25);border:1px solid var(--error);border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:var(--error);margin-top:4px}
+
+    .roi-field{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .roi-field__label{font-size:13px;font-weight:500;color:var(--ink);letter-spacing:-.005em}
+    .roi-field__opt{color:var(--ink-mute);font-weight:400}
+    .roi-input{font-family:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:13px 14px;width:100%;outline:none;transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;line-height:1.4}
+    .roi-input::placeholder{color:var(--ink-mute)}
+    .roi-input:hover{border-color:oklch(0.78 0.02 60)}
+    .roi-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px oklch(0.68 0.18 35/.15)}
+    .roi-textarea{resize:vertical;min-height:96px;line-height:1.5}
+    .roi-select{appearance:none;-webkit-appearance:none;padding-right:36px;cursor:pointer}
+    .roi-select-wrap{position:relative}
+    .roi-select__chev{position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--ink-soft)}
+    .roi-field__msg{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink-mute);min-height:16px;line-height:1.3}
+    .roi-field--error .roi-input{border-color:var(--error);background:oklch(0.99 0.015 25)}
+    .roi-field--error .roi-input:focus{box-shadow:0 0 0 4px oklch(0.55 0.18 25/.15)}
+    .roi-field--error .roi-field__msg{color:var(--error)}
+    .roi-counter{color:var(--ink-mute);font-variant-numeric:tabular-nums}
+    .roi-counter--low{color:var(--accent-deep)}
+    .roi-phone{display:grid;grid-template-columns:110px 1fr;gap:8px}
+
+    .roi-steps{list-style:none;margin:0;padding:0;display:flex;align-items:center}
+    .roi-step{display:flex;align-items:center;gap:10px;flex:1 1 auto;font-size:13px;color:var(--ink-mute)}
+    .roi-step__dot{width:26px;height:26px;border-radius:999px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-mute);font-size:12px;font-weight:600;flex-shrink:0;transition:all .25s ease}
+    .roi-step__label{white-space:nowrap;transition:color .2s ease}
+    .roi-step__bar{flex:1 1 auto;height:1px;background:var(--line);margin:0 12px;min-width:16px}
+    .roi-step--active .roi-step__dot{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+    .roi-step--active .roi-step__label{color:var(--ink);font-weight:500}
+    .roi-step--done .roi-step__dot{background:var(--accent);border-color:var(--accent);color:white}
+    .roi-step--done .roi-step__label{color:var(--ink-soft)}
+    .roi-stepbar{display:flex;flex-direction:column;gap:10px}
+    .roi-stepbar__head{display:flex;justify-content:space-between;align-items:baseline;font-size:13px}
+    .roi-stepbar__count{color:var(--ink-mute);letter-spacing:.04em;text-transform:uppercase;font-size:11px;font-weight:500}
+    .roi-stepbar__title{color:var(--ink);font-weight:500;font-size:14px}
+    .roi-stepbar__track{height:4px;background:var(--line-soft);border-radius:999px;overflow:hidden}
+    .roi-stepbar__fill{height:100%;background:var(--accent);border-radius:999px;transition:width .4s cubic-bezier(.65,.05,.36,1)}
+
+    .roi-formnav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px}
+    .roi-formnav__hint{font-size:12px;color:var(--ink-mute)}
+
+    .roi-brand-banner{width:100%;display:block;object-fit:cover;object-position:left center;max-height:200px}
+    .v2-brand-banner{width:100%;display:block;border-radius:var(--radius);margin-bottom:32px;object-fit:cover;object-position:left center;max-height:160px}
+    .v1-hero{text-align:center;padding:60px 40px 40px;max-width:820px;margin:0 auto}
+    .v1-hero__eyebrow{margin-bottom:22px}
+    .v1-hero__title{font-size:clamp(52px,7vw,88px);margin:0 0 24px}
+    .v1-hero__title em{font-style:italic;color:var(--accent-deep)}
+    .v1-hero__sub{font-size:18px;color:var(--ink-soft);max-width:580px;margin:0 auto;line-height:1.55}
+    .v1-hero__meta{display:inline-flex;align-items:center;gap:16px;margin-top:28px;font-size:13px;color:var(--ink-mute)}
+    .v1-hero__dot{width:4px;height:4px;border-radius:999px;background:currentColor;opacity:.6}
+    .v1-card{max-width:640px;margin:32px auto 80px;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-lg)}
+    .v1-card__head{margin-bottom:28px}
+    .v1-card__steps{margin-top:28px;padding-top:24px;border-top:1px solid var(--line-soft)}
+    .v1-card__body{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px}
+    .v1-card__body .v1-span2{grid-column:1/-1}
+    .v1-why{max-width:1100px;margin:0 auto;padding:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+    .v1-why__item{padding:20px 4px}
+    .v1-why__num{font-family:var(--font-display);font-size:36px;color:var(--accent-deep);margin-bottom:12px;line-height:1}
+    .v1-why__title{font-size:16px;font-weight:500;margin:0 0 8px;letter-spacing:-.01em}
+    .v1-why__copy{font-size:14px;color:var(--ink-soft);line-height:1.55;margin:0}
+    .v1-faq{max-width:760px;margin:0 auto;padding:60px 40px 100px}
+    .v1-faq__title{font-family:var(--font-display);font-size:44px;letter-spacing:-.02em;text-align:center;margin:0 0 32px}
+    .v1-faq__list{display:flex;flex-direction:column;gap:1px;background:var(--line-soft);border-radius:var(--radius);overflow:hidden}
+    .v1-faq__item{background:var(--surface)}
+    .v1-faq__q{display:flex;justify-content:space-between;align-items:center;padding:22px 24px;cursor:pointer;font-size:15px;font-weight:500;list-style:none;user-select:none}
+    .v1-faq__q::-webkit-details-marker{display:none}
+    .v1-faq__a{padding:0 24px 22px;font-size:14px;color:var(--ink-soft);line-height:1.6}
+    .v1-faq__chev{transition:transform .2s ease;color:var(--ink-mute);flex-shrink:0}
+    details[open] .v1-faq__chev{transform:rotate(180deg)}
+    details[open] .v1-faq__q{color:var(--accent-deep)}
+    .v1-foot{border-top:1px solid var(--line-soft);padding:28px 40px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink-mute)}
+
+    .v2-shell{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+    .v2-left{padding:56px;display:flex;flex-direction:column;border-right:1px solid var(--line-soft)}
+    .v2-left__top{display:flex;align-items:center;justify-content:space-between;margin-bottom:56px}
+    .v2-left__hero{margin-bottom:48px}
+    .v2-left__eyebrow{margin-bottom:24px}
+    .v2-left__title{font-size:clamp(40px,4.5vw,64px);margin:0 0 20px;max-width:11ch}
+    .v2-left__title em{font-style:italic;color:var(--accent-deep)}
+    .v2-left__sub{font-size:17px;color:var(--ink-soft);max-width:44ch;line-height:1.55;margin:0}
+    .v2-left__why{margin-top:auto;display:flex;flex-direction:column;gap:16px;border-top:1px solid var(--line-soft);padding-top:32px}
+    .v2-left__why-title{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute);margin:0 0 4px;font-weight:500}
+    .v2-bullet{display:grid;grid-template-columns:28px 1fr;gap:14px;align-items:start;padding:4px 0}
+    .v2-bullet__icon{width:28px;height:28px;border-radius:8px;background:var(--accent-tint);color:var(--accent-deep);display:grid;place-items:center;font-family:var(--font-display);font-size:16px;margin-top:2px}
+    .v2-bullet__text{font-size:14px;color:var(--ink-soft);line-height:1.5}
+    .v2-bullet__text strong{color:var(--ink);font-weight:500}
+    .v2-right{padding:56px;display:flex;flex-direction:column;gap:32px}
+    .v2-right__head{display:flex;flex-direction:column;gap:8px}
+    .v2-right__heading{font-family:var(--font-display);font-size:32px;margin:0;letter-spacing:-.01em}
+    .v2-right__lede{color:var(--ink-soft);font-size:14px;margin:0}
+    .v2-right__form{display:flex;flex-direction:column;gap:20px;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow)}
+    .v2-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .v2-grid--single{grid-template-columns:1fr}
+    .v2-grid .v2-span2{grid-column:1/-1}
+    .v2-trust{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-mute)}
+    .v2-trust__icon{width:18px;height:18px;flex-shrink:0;color:var(--accent-deep)}
+
+    .roi-thanks{max-width:640px;margin:0 auto;padding:100px 40px;text-align:center}
+    .roi-thanks__mark{width:76px;height:76px;border-radius:999px;background:var(--accent-tint);border:1px solid var(--accent-soft);display:inline-grid;place-items:center;color:var(--accent-deep);margin-bottom:28px;animation:roi-pop .5s cubic-bezier(.34,1.56,.64,1) both}
+    @keyframes roi-pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+    .roi-thanks__title{font-family:var(--font-display);font-size:clamp(44px,5vw,64px);letter-spacing:-.02em;margin:0 0 20px;line-height:1.05}
+    .roi-thanks__title em{font-style:italic;color:var(--accent-deep)}
+    .roi-thanks__copy{font-size:17px;color:var(--ink-soft);line-height:1.55;max-width:480px;margin:0 auto 36px}
+    .roi-thanks__summary{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:24px 28px;text-align:left;margin:0 auto 32px;max-width:460px;box-shadow:var(--shadow-sm)}
+    .roi-thanks__row{display:grid;grid-template-columns:100px 1fr;gap:12px;padding:8px 0;font-size:14px;border-bottom:1px solid var(--line-soft)}
+    .roi-thanks__row:last-child{border-bottom:none}
+    .roi-thanks__row dt{color:var(--ink-mute);font-weight:400;margin:0}
+    .roi-thanks__row dd{color:var(--ink);margin:0;word-break:break-word}
+    .roi-thanks__cta{display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center}
+    .roi-thanks__next{margin-top:48px;padding-top:28px;border-top:1px solid var(--line-soft);font-size:13px;color:var(--ink-mute);max-width:460px;margin-left:auto;margin-right:auto}
+
+    .roi-stepview{animation:roi-slidein .35s cubic-bezier(.4,0,.2,1)}
+    @keyframes roi-slidein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    @media(max-width:900px){
+      .v2-shell{grid-template-columns:1fr}.v2-left{display:none}.v2-right{padding:32px 24px}
+      .v1-card__body,.v2-grid{grid-template-columns:1fr}.v1-why{grid-template-columns:1fr;padding:24px}
+      .roi-topbar{padding:18px 24px}.v1-card{margin:24px 16px 60px;padding:28px 24px}
+      .v1-hero{padding:48px 24px 24px}.v1-foot{flex-direction:column;gap:8px;text-align:center;padding:24px}
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo, useId } = React;
+
+// ── Google Apps Script endpoint ──
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxB_KuU45NrOWVbRVteklK9z6nDCpSDDIS3AIxkxP3Fyo_31qUTJlFVOJ2cGBHd6RKnGA/exec";
+
+// ── Submit via hidden iframe (bypasses CORS entirely) ──
+async function postToSheet(values) {
+  return new Promise((resolve, reject) => {
+    const params = new URLSearchParams({
+      fullName:     values.fullName,
+      email:        values.email,
+      phone:        values.dial + " " + values.phone,
+      organisation: values.organisation,
+      industry:     values.industry,
+      role:         values.role,
+      country:      values.country,
+      reason:       values.reason,
+    });
+
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = `${SCRIPT_URL}?${params.toString()}`;
+
+    // Resolve after a delay — we can't read the response cross-origin,
+    // but the request fires and Apps Script receives it.
+    iframe.onload = () => {
+      document.body.removeChild(iframe);
+      resolve();
+    };
+    iframe.onerror = () => {
+      document.body.removeChild(iframe);
+      reject(new Error("Request failed"));
+    };
+
+    // Fallback resolve after 5s in case onload doesn't fire
+    setTimeout(() => {
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+      }
+      resolve();
+    }, 5000);
+
+    document.body.appendChild(iframe);
+  });
+}
+
+const COUNTRIES = [
+  {name:"Malaysia",dial:"+60"},{name:"Singapore",dial:"+65"},{name:"Indonesia",dial:"+62"},
+  {name:"Thailand",dial:"+66"},{name:"Philippines",dial:"+63"},{name:"Vietnam",dial:"+84"},
+  {name:"Brunei",dial:"+673"},{name:"Australia",dial:"+61"},{name:"United Kingdom",dial:"+44"},
+  {name:"United States",dial:"+1"},{name:"Japan",dial:"+81"},{name:"South Korea",dial:"+82"},
+  {name:"China",dial:"+86"},{name:"India",dial:"+91"},
+];
+const DIAL_CODES = ["+60","+65","+62","+66","+63","+84","+673","+61","+44","+1","+81","+82","+86","+91"];
+const STEPS = [
+  {id:"you",   label:"About you", fields:["fullName","email"]},
+  {id:"work",  label:"Your work", fields:["organisation","industry","role","country"]},
+  {id:"reach", label:"Reach you", fields:["dial","phone","reason"]},
+];
+const INITIAL = {fullName:"",email:"",organisation:"",industry:"",role:"",country:"Malaysia",dial:"+60",phone:"",reason:""};
+const FAQ = [
+  {q:"What's the time commitment?",       a:"Two ninety-minute brainstorm sessions over the cohort, plus an optional read-out at the end. Sessions run online; in-person is offered in Kuala Lumpur and Singapore where numbers allow."},
+  {q:"Do I need a technical background?", a:"No. We're after a wide mix — operators, makers, parents, students, professionals from every field. Lived experience and curiosity matter more than credentials."},
+  {q:"Will my information be shared?",    a:"We only use your details to coordinate this programme. We don't sell, share with third parties, or add you to a marketing list. You can ask us to delete your record at any time."},
+  {q:"Is there a cost or honorarium?",    a:"Participation is free. Selected contributors who lead a workstream receive a modest honorarium; details are shared with shortlisted applicants."},
+  {q:"What happens after I register?",    a:"You'll get a confirmation email within minutes. Within five working days we'll follow up with the cohort brief and a short scheduling poll for your first session."},
+];
+
+function validate(name, value) {
+  const v = (value ?? "").trim();
+  if (name==="fullName")     { if(!v) return "Please enter your name"; if(v.length<2) return "That looks a little short"; return ""; }
+  if (name==="email")        { if(!v) return "We need an email to reach you"; if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return "That email doesn't look right"; return ""; }
+  if (name==="organisation") { if(!v) return "Tell us where you work or study"; return ""; }
+  if (name==="industry")    { if(!v) return "Select your industry"; return ""; }
+  if (name==="role")         { if(!v) return "What's your role?"; return ""; }
+  if (name==="country")      { if(!v) return "Pick a country"; return ""; }
+  if (name==="dial")         { if(!v||!/^\+\d{1,4}$/.test(v)) return "Use format +60"; return ""; }
+  if (name==="phone")        { const d=v.replace(/\D/g,""); if(!v) return "Phone number is required"; if(d.length<6) return "Too short"; if(d.length>15) return "Too long"; return ""; }
+  if (name==="reason")       { if(!v) return "Share a sentence or two with us"; if(v.length<15) return `A bit more, please (${15-v.length} to go)`; if(v.length>600) return "That's over 600 characters"; return ""; }
+  return "";
+}
+
+function useFormState() {
+  const [values,      setValues]     = useState(INITIAL);
+  const [touched,     setTouched]    = useState({});
+  const [step,        setStep]       = useState(0);
+  const [submitted,   setSubmitted]  = useState(false);
+  const [submitting,  setSubmitting] = useState(false);
+  const [submitError, setSubmitError]= useState("");
+
+  const errors = useMemo(() => {
+    const e={};
+    Object.keys(values).forEach(k=>{const m=validate(k,values[k]);if(m)e[k]=m;});
+    return e;
+  }, [values]);
+
+  const setField  = (name,val) => {setValues(v=>({...v,[name]:val}));setTouched(t=>({...t,[name]:true}));};
+  const blurField = name => setTouched(t=>({...t,[name]:true}));
+  const stepFields  = STEPS[step].fields;
+  const stepIsValid = stepFields.every(f=>!errors[f]);
+
+  const next = () => {
+    setTouched(t=>{const n={...t};stepFields.forEach(f=>n[f]=true);return n;});
+    if(stepIsValid && step<STEPS.length-1) setStep(s=>s+1);
+  };
+  const prev = () => {if(step>0) setStep(s=>s-1);};
+
+  const submit = async () => {
+    setTouched(t=>{const n={...t};stepFields.forEach(f=>n[f]=true);return n;});
+    if(!stepIsValid) return;
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await postToSheet(values);
+      setSubmitted(true);
+    } catch(err) {
+      setSubmitError("Network error — please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const reset = () => {setValues(INITIAL);setTouched({});setStep(0);setSubmitted(false);setSubmitError("");};
+  return {values,errors,touched,step,submitted,submitting,submitError,setField,blurField,next,prev,submit,reset,stepIsValid,steps:STEPS};
+}
+
+// ── Field primitives ──
+function FieldShell({label,htmlFor,error,touched,hint,children,optional}){
+  const bad=touched&&error;
+  return(
+    <label className={"roi-field"+(bad?" roi-field--error":"")} htmlFor={htmlFor}>
+      <span className="roi-field__label">{label}{optional&&<span className="roi-field__opt"> · optional</span>}</span>
+      {children}
+      <span className="roi-field__msg">{bad?error:(hint||"")}</span>
+    </label>
+  );
+}
+function TF({name,label,value,error,touched,onChange,onBlur,type="text",placeholder,hint,optional,autoComplete}){
+  const id=`f-${name}-${useId()}`;
+  return(
+    <FieldShell label={label} htmlFor={id} error={error} touched={touched} hint={hint} optional={optional}>
+      <input id={id} name={name} type={type} value={value} onChange={e=>onChange(name,e.target.value)} onBlur={()=>onBlur(name)} placeholder={placeholder} autoComplete={autoComplete} className="roi-input"/>
+    </FieldShell>
+  );
+}
+function SF({name,label,value,error,touched,onChange,onBlur,options,hint}){
+  const id=`f-${name}-${useId()}`;
+  return(
+    <FieldShell label={label} htmlFor={id} error={error} touched={touched} hint={hint}>
+      <div className="roi-select-wrap">
+        <select id={id} value={value} onChange={e=>onChange(name,e.target.value)} onBlur={()=>onBlur(name)} className="roi-input roi-select">
+          {options.map(o=><option key={o.value??o} value={o.value??o}>{o.label??o}</option>)}
+        </select>
+        <Chev/>
+      </div>
+    </FieldShell>
+  );
+}
+function PhoneField({dial,phone,dialError,phoneError,dialTouched,phoneTouched,onChange,onBlur}){
+  const id=`f-phone-${useId()}`;
+  const bad=(phoneTouched&&phoneError)||(dialTouched&&dialError);
+  return(
+    <label className={"roi-field"+(bad?" roi-field--error":"")} htmlFor={id}>
+      <span className="roi-field__label">Phone number</span>
+      <div className="roi-phone">
+        <div className="roi-select-wrap">
+          <select value={dial} onChange={e=>onChange("dial",e.target.value)} onBlur={()=>onBlur("dial")} className="roi-input roi-select" aria-label="Dial code">
+            {DIAL_CODES.map(d=><option key={d} value={d}>{d}</option>)}
+          </select>
+          <Chev/>
+        </div>
+        <input id={id} type="tel" inputMode="tel" value={phone} onChange={e=>onChange("phone",e.target.value)} onBlur={()=>onBlur("phone")} placeholder="12 345 6789" autoComplete="tel" className="roi-input"/>
+      </div>
+      <span className="roi-field__msg">{bad?((phoneTouched&&phoneError)||(dialTouched&&dialError)):"We'll only use this if we need to follow up directly."}</span>
+    </label>
+  );
+}
+function TAF({name,label,value,error,touched,onChange,onBlur,placeholder,hint,max=600}){
+  const id=`f-${name}-${useId()}`;
+  const bad=touched&&error;
+  const rem=max-(value?.length||0);
+  return(
+    <label className={"roi-field"+(bad?" roi-field--error":"")} htmlFor={id}>
+      <span className="roi-field__label">{label}</span>
+      <textarea id={id} value={value} onChange={e=>onChange(name,e.target.value)} onBlur={()=>onBlur(name)} placeholder={placeholder} rows={4} maxLength={max} className="roi-input roi-textarea"/>
+      <span className="roi-field__msg">
+        <span>{bad?error:(hint||"")}</span>
+        <span className={"roi-counter"+(rem<50?" roi-counter--low":"")}>{rem}</span>
+      </span>
+    </label>
+  );
+}
+const Chev=()=><svg className="roi-select__chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+const ArrowR=()=><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8m0 0L7.5 3.5M11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+
+function StepDots({steps,current}){
+  return(
+    <ol className="roi-steps" aria-label="Form progress">
+      {steps.map((s,i)=>{
+        const st=i<current?"done":i===current?"active":"todo";
+        return(
+          <li key={s.id} className={`roi-step roi-step--${st}`}>
+            <span className="roi-step__dot">
+              {st==="done"
+                ?<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2l2.4 2.4L9.5 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                :<span>{i+1}</span>}
+            </span>
+            <span className="roi-step__label">{s.label}</span>
+            {i<steps.length-1&&<span className="roi-step__bar"/>}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+function StepBar({steps,current}){
+  return(
+    <div className="roi-stepbar">
+      <div className="roi-stepbar__head">
+        <span className="roi-stepbar__count">Step {current+1} of {steps.length}</span>
+        <span className="roi-stepbar__title">{steps[current].label}</span>
+      </div>
+      <div className="roi-stepbar__track"><div className="roi-stepbar__fill" style={{width:`${((current+1)/steps.length)*100}%`}}/></div>
+    </div>
+  );
+}
+
+// ── Shared step bodies ──
+function S0({v,e,t,sf,bf,wrap,span}){return(
+  <div className={wrap}>
+    <div className={span}><TF name="fullName" label="Full name" value={v.fullName} error={e.fullName} touched={t.fullName} onChange={sf} onBlur={bf} placeholder="e.g. Aisha Tan" autoComplete="name"/></div>
+    <div className={span}><TF name="email" label="Email address" type="email" value={v.email} error={e.email} touched={t.email} onChange={sf} onBlur={bf} placeholder="you@somewhere.com" hint="We'll send session invites here." autoComplete="email"/></div>
+  </div>
+);}
+const INDUSTRIES = ["Technology","Telecommunications","Finance & Banking","Healthcare","Education","Manufacturing","Retail & E-commerce","Government & Public Sector","Energy & Utilities","Media & Entertainment","Professional Services","Real Estate","Transportation & Logistics","Agriculture","Other"];
+function S1({v,e,t,sf,bf,wrap,span}){return(
+  <div className={wrap}>
+    <div className={span}><TF name="organisation" label="Organisation" value={v.organisation} error={e.organisation} touched={t.organisation} onChange={sf} onBlur={bf} placeholder="Company, university, or 'Independent'" autoComplete="organization"/></div>
+    <div className={span}><SF name="industry" label="Industry" value={v.industry} error={e.industry} touched={t.industry} onChange={sf} onBlur={bf} options={[{value:"",label:"Select your industry"},...INDUSTRIES.map(i=>({value:i,label:i}))]}/></div>
+    <TF name="role" label="Role / job title" value={v.role} error={e.role} touched={t.role} onChange={sf} onBlur={bf} placeholder="e.g. Product Designer" autoComplete="organization-title"/>
+    <SF name="country" label="Country / region" value={v.country} error={e.country} touched={t.country} onChange={sf} onBlur={bf} options={COUNTRIES.map(c=>({value:c.name,label:c.name}))}/>
+  </div>
+);}
+function S2({v,e,t,sf,bf,wrap,span}){return(
+  <div className={wrap}>
+    <div className={span}><PhoneField dial={v.dial} phone={v.phone} dialError={e.dial} phoneError={e.phone} dialTouched={t.dial} phoneTouched={t.phone} onChange={sf} onBlur={bf}/></div>
+    <div className={span}><TAF name="reason" label="Why are you interested?" value={v.reason} error={e.reason} touched={t.reason} onChange={sf} onBlur={bf} placeholder="What draws you to this work? What would you bring to the room?" hint="A sentence or two is plenty."/></div>
+  </div>
+);}
+
+// ── Shared form nav ──
+function FormNav({step,steps,stepIsValid,submitting,submitError,next,prev,submit,hint}){
+  const isLast=step===steps.length-1;
+  return(
+    <>
+      {submitError&&<div className="roi-submit-error">⚠ {submitError}</div>}
+      <div className="roi-formnav">
+        {step>0
+          ?<button className="roi-btn roi-btn--ghost" onClick={prev} disabled={submitting}>← Back</button>
+          :<span className="roi-formnav__hint">{hint}</span>}
+        {!isLast
+          ?<button className="roi-btn roi-btn--accent" onClick={next} disabled={!stepIsValid}>Continue <ArrowR/></button>
+          :<button className="roi-btn roi-btn--accent" onClick={submit} disabled={!stepIsValid||submitting}>
+            {submitting?<><span className="roi-spinner"/>Submitting…</>:"Submit registration"}
+          </button>}
+      </div>
+    </>
+  );
+}
+
+// ── Thank-you screen ──
+function hashCode(s){let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h)+s.charCodeAt(i)|0;return h;}
+function ThanksScreen({values,onReset}){
+  const ref="ROI-"+Math.abs(hashCode(values.email+values.fullName)).toString(36).toUpperCase().slice(0,6);
+  const date=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+  return(
+    <div className="roi-thanks">
+      <div className="roi-thanks__mark">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M8 16.5l5.5 5.5L24 11" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </div>
+      <h1 className="roi-thanks__title">Thank you, <em>{values.fullName.split(" ")[0]||"friend"}</em>.</h1>
+      <p className="roi-thanks__copy">Your registration is in and saved to our records. We'll be in touch within five working days with details on the next brainstorm session.</p>
+      <dl className="roi-thanks__summary">
+        {[["Name",values.fullName],["Email",values.email],["Phone",`${values.dial} ${values.phone}`],["Organisation",values.organisation],["Industry",values.industry],["Role",values.role],["Country",values.country]].map(([k,v])=>(
+          <div key={k} className="roi-thanks__row"><dt>{k}</dt><dd>{v}</dd></div>
+        ))}
+      </dl>
+      <div className="roi-thanks__cta">
+        <button className="roi-btn roi-btn--ghost" onClick={onReset}>Submit another</button>
+        <a className="roi-btn roi-btn--accent" href="#top">Back to top</a>
+      </div>
+      <div className="roi-thanks__next">Reference no. <strong>{ref}</strong> · Saved {date}</div>
+    </div>
+  );
+}
+
+// ── Shared chrome ──
+function TopBar({subtitle}){
+  return(
+    <div className="roi-topbar">
+      <div className="roi-brand">
+        <div className="roi-brand__logo-wrap">
+          <img src="Asset/brand_asset1.jpg" alt="EIP Logo" className="roi-brand__logo"/>
+        </div>
+        <div className="roi-brand__name">
+          <span className="roi-brand__name-main">Enterprise Innovation Platform</span>
+          <span className="roi-brand__name-sub">Powered by U Mobile</span>
+        </div>
+        {subtitle&&<span className="roi-brand__sub">{subtitle}</span>}
+      </div>
+      <img src="Asset/brand_asset2.jpg" alt="U Mobile" style={{height:"48px",objectFit:"contain"}}/>
+    </div>
+  );
+}
+function Footer(){
+  return <div className="v1-foot"><span>© 2026 Enterprise Innovation Platform — Powered by U Mobile.</span><span>Privacy · Terms · eip@umobile.my</span></div>;
+}
+
+// ── V1 Centered ──
+function V1Centered({bg}){
+  const f=useFormState();
+  const {values,errors,touched,step,submitted,submitting,submitError,setField,blurField,next,prev,submit,reset,stepIsValid,steps}=f;
+  if(submitted) return <div className={`roi-root roi-bg--${bg}`} id="top"><TopBar subtitle={null}/><ThanksScreen values={values} onReset={reset}/><Footer/></div>;
+  const sp={v:values,e:errors,t:touched,sf:setField,bf:blurField,wrap:"v1-card__body",span:"v1-span2"};
+  return(
+    <div className={`roi-root roi-bg--${bg}`} id="top">
+      <TopBar subtitle={null}/>
+<section className="v1-hero">
+        <div className="v1-hero__eyebrow roi-eyebrow roi-eyebrow--accent">Enterprise Innovation Platform</div>
+        <h1 className="v1-hero__title roi-display">Help us shape <em>what's next.</em></h1>
+        <p className="v1-hero__sub">We're gathering people willing to participate, contribute and brainstorm with us on a new innovation programme. Tell us a little about yourself and we'll bring you in.</p>
+      </section>
+      <section className="v1-card" aria-labelledby="v1-form-title">
+        <div className="v1-card__head">
+          <h2 id="v1-form-title" className="roi-display" style={{fontSize:32,margin:0}}>Register your interest</h2>
+          <p style={{color:"var(--ink-soft)",fontSize:14,margin:"8px 0 0"}}>All fields are required. We'll only use this to contact you about the programme.</p>
+          <div className="v1-card__steps"><StepDots steps={steps} current={step}/></div>
+        </div>
+        <div className="roi-stepview" key={step}>
+          {step===0&&<S0 {...sp}/>}{step===1&&<S1 {...sp}/>}{step===2&&<S2 {...sp}/>}
+        </div>
+        <FormNav step={step} steps={steps} stepIsValid={stepIsValid} submitting={submitting} submitError={submitError} next={next} prev={prev} submit={submit} hint={`Step ${step+1} of ${steps.length}`}/>
+      </section>
+      <section className="v1-why" aria-label="Why participate">
+        {[["01","Shape the brief, early","Sit at the whiteboard, not the spec review. Your input changes what we build before scope hardens."],
+          ["02","Mixed-room sessions","Designers, engineers, operators, students, retirees — we deliberately mix the room. Better ideas come from rough edges."],
+          ["03","Credit, not just thanks","Contributions are named in the programme report. Notable input gets co-author credit on published findings."]
+        ].map(([n,title,copy])=>(
+          <div key={n} className="v1-why__item"><div className="v1-why__num">{n}</div><h3 className="v1-why__title">{title}</h3><p className="v1-why__copy">{copy}</p></div>
+        ))}
+      </section>
+      <Footer/>
+    </div>
+  );
+}
+
+// ── V2 Split ──
+function V2Split({bg}){
+  const f=useFormState();
+  const {values,errors,touched,step,submitted,submitting,submitError,setField,blurField,next,prev,submit,reset,stepIsValid,steps}=f;
+  if(submitted) return <div className={`roi-root roi-bg--${bg}`} id="top"><ThanksScreen values={values} onReset={reset}/></div>;
+  const s0={v:values,e:errors,t:touched,sf:setField,bf:blurField,wrap:"v2-grid v2-grid--single",span:"v2-span2"};
+  const s1={...s0,wrap:"v2-grid"};
+  return(
+    <div className={`roi-root roi-bg--${bg}`} id="top">
+      <div className="v2-shell">
+        <aside className="v2-left">
+          <div className="v2-left__top">
+            <div className="roi-brand">
+              <div className="roi-brand__logo-wrap"><img src="Asset/brand_asset1.jpg" alt="EIP Logo" className="roi-brand__logo"/></div>
+              <div className="roi-brand__name">
+                <span className="roi-brand__name-main">Enterprise Innovation Platform</span>
+                <span className="roi-brand__name-sub">Powered by U Mobile</span>
+              </div>
+            </div>
+            <nav className="roi-topnav"></nav>
+          </div>
+          <div className="v2-left__hero">
+<div className="v2-left__eyebrow roi-eyebrow roi-eyebrow--accent">Enterprise Innovation Platform</div>
+            <h1 className="v2-left__title roi-display">A room for <em>willing minds.</em></h1>
+            <p className="v2-left__sub">We're gathering people willing to participate, contribute and brainstorm on a new programme. Different fields, different vantages — that's the point.</p>
+          </div>
+          <div className="v2-left__why">
+            <h3 className="v2-left__why-title">What you're signing up for</h3>
+            {[["Two 90-min brainstorms.","Live, facilitated, working sessions — not a webinar."],
+              ["Mixed rooms by design.","We deliberately seat unfamiliar disciplines next to each other."],
+              ["Named credit.","Contributors are listed in the published programme report."],
+              ["No fee.","Free to participate. Honoraria for workstream leads."]
+            ].map(([b,r],i)=>(
+              <div key={i} className="v2-bullet"><div className="v2-bullet__icon">·</div><div className="v2-bullet__text"><strong>{b}</strong> {r}</div></div>
+            ))}
+          </div>
+        </aside>
+        <main className="v2-right">
+          <div className="v2-right__head">
+            <p className="roi-eyebrow">Register your interest</p>
+            <h2 className="v2-right__heading">Tell us about you.</h2>
+            <p className="v2-right__lede">Three quick steps. About 3 minutes.</p>
+          </div>
+          <StepBar steps={steps} current={step}/>
+          <div className="v2-right__form">
+            <div className="roi-stepview" key={step}>
+              {step===0&&<S0 {...s0}/>}{step===1&&<S1 {...s1}/>}{step===2&&<S2 {...s0}/>}
+            </div>
+            <FormNav step={step} steps={steps} stepIsValid={stepIsValid} submitting={submitting} submitError={submitError} next={next} prev={prev} submit={submit} hint="Live validation as you type"/>
+          </div>
+          <div className="v2-trust">
+            <svg className="v2-trust__icon" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L2.5 4v4.5C2.5 12 5.4 15.4 9 16.5c3.6-1.1 6.5-4.5 6.5-8V4L9 1.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M6 9l2 2 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            Your details are used only to coordinate this programme. You can ask us to delete them at any time.
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+// ── App ──
+function App(){
+  const [layout,setLayout]=useState("v1");
+  const [bg,setBg]=useState("gradient");
+  return(
+    <>
+      {layout==="v1"?<V1Centered bg={bg}/>:<V2Split bg={bg}/>}
+      <div className="layout-switcher" role="group" aria-label="Layout options">
+        <button className={"layout-btn"+(layout==="v1"?" active":"")} onClick={()=>setLayout("v1")}>① Centered</button>
+        <button className={"layout-btn"+(layout==="v2"?" active":"")} onClick={()=>setLayout("v2")}>② Split</button>
+        <span style={{width:1,background:"var(--line)",margin:"4px 2px"}}/>
+        {["solid","gradient","pattern","mesh"].map(b=>(
+          <button key={b} className={"layout-btn"+(bg===b?" active":"")} onClick={()=>setBg(b)} style={{textTransform:"capitalize"}}>{b}</button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
